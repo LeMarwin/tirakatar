@@ -33,6 +33,8 @@ import Tirakatar.App.Settings (Settings(..))
 import Tirakatar.App.Storage.Util
 import Tirakatar.App.Status.Types
 import Tirakatar.App.Version
+import Tirakatar.App.Types
+import Tirakatar.Types
 
 import qualified Data.List as L
 import qualified Data.Map.Strict as M
@@ -115,7 +117,7 @@ instance (MonadBaseConstr t m, MonadRetract t m, PlatformNatives, HasVersion) =>
         liftIO fire
       Just v -> do
         logWrite "authed setAuthInfo: changing auth info"
-        -- setLastStorage $ Just . _storage'walletName . _authInfo'storage $ v
+        setLastStorage $ Just . _storage'name . _authInfo'storage $ v
         writeExternalRef authRef v
   {-# INLINE setAuthInfo #-}
 
@@ -144,46 +146,38 @@ instance MonadBaseConstr t m => MonadAlertPoster t (ErgveinM t m) where
   {-# INLINE getAlertEventFire #-}
 
 instance (MonadBaseConstr t m, HasStoreDir m) => MonadStorage t (ErgveinM t m) where
-  getEncryptedPrvStorage = undefined
-  getWalletName = undefined
-  getPubStorage = undefined
-  getPubStorageD = undefined
-  storeWallet = undefined
-  modifyPubStorage = undefined
-  getStoreMutex = undefined
-  getStoreChan = undefined
-  -- getEncryptedPrvStorage = fmap (_storage'encryptedPrvStorage . _authInfo'storage) $ readExternalRef =<< asks env'authRef
-  -- {-# INLINE getEncryptedPrvStorage #-}
-  -- getWalletName = fmap (_storage'walletName . _authInfo'storage) $ readExternalRef =<< asks env'authRef
-  -- {-# INLINE getWalletName #-}
-  -- getPubStorage = fmap (_storage'pubStorage . _authInfo'storage) $ readExternalRef =<< asks env'authRef
-  -- {-# INLINE getPubStorage #-}
-  -- getPubStorageD = do
-  --   authInfoD <- externalRefDynamic =<< asks env'authRef
-  --   pure $ ffor authInfoD $ \ai -> ai ^. authInfo'storage. storage'pubStorage
-  -- {-# INLINE getPubStorageD #-}
-  -- storeWallet caller e = do
-  --   ref <-  asks env'authRef
-  --   performEvent $ ffor e $ \_ -> do
-  --       authInfo <- readExternalRef ref
-  --       let storage = _authInfo'storage authInfo
-  --       let eciesPubKey = _authInfo'eciesPubKey authInfo
-  --       saveStorageToFile caller eciesPubKey storage
-  -- {-# INLINE storeWallet #-}
-  --
-  -- modifyPubStorage caller fe = do
-  --   authRef   <- asks env'authRef
-  --   chan      <- asks env'storeChan
-  --   performEvent $ ffor fe $ \f -> do
-  --     mai <- modifyExternalRefMaybe authRef $ \ai ->
-  --       let mps' = f (ai ^. authInfo'storage . storage'pubStorage)
-  --       in (\a -> (a, a)) . (\ps' -> ai & authInfo'storage . storage'pubStorage .~ ps') <$> mps'
-  --     liftIO $ atomically $ traverse_ (writeTChan chan . (caller, )) mai
-  -- {-# INLINE modifyPubStorage #-}
-  -- getStoreMutex = asks env'storeMutex
-  -- {-# INLINE getStoreMutex #-}
-  -- getStoreChan = asks env'storeChan
-  -- {-# INLINE getStoreChan #-}
+  getEncryptedPrvStorage = fmap (_storage'encryptedPrvStorage . _authInfo'storage) $ readExternalRef =<< asks env'authRef
+  {-# INLINE getEncryptedPrvStorage #-}
+  getStorageName = fmap (_storage'name . _authInfo'storage) $ readExternalRef =<< asks env'authRef
+  {-# INLINE getStorageName #-}
+  getPubStorage = fmap (_storage'pubStorage . _authInfo'storage) $ readExternalRef =<< asks env'authRef
+  {-# INLINE getPubStorage #-}
+  getPubStorageD = do
+    authInfoD <- externalRefDynamic =<< asks env'authRef
+    pure $ ffor authInfoD $ \ai -> ai ^. authInfo'storage . storage'pubStorage
+  {-# INLINE getPubStorageD #-}
+  storeStorage caller e = do
+    ref <-  asks env'authRef
+    performEvent $ ffor e $ \_ -> do
+        authInfo <- readExternalRef ref
+        let storage = _authInfo'storage authInfo
+        let eciesPubKey = _authInfo'eciesPubKey authInfo
+        saveStorageToFile caller eciesPubKey storage
+  {-# INLINE storeStorage #-}
+
+  modifyPubStorage caller fe = do
+    authRef   <- asks env'authRef
+    chan      <- asks env'storeChan
+    performEvent $ ffor fe $ \f -> do
+      mai <- modifyExternalRefMaybe authRef $ \ai ->
+        let mps' = f (ai ^. authInfo'storage . storage'pubStorage)
+        in (\a -> (a, a)) . (\ps' -> ai & authInfo'storage . storage'pubStorage .~ ps') <$> mps'
+      liftIO $ atomically $ traverse_ (writeTChan chan . (caller, )) mai
+  {-# INLINE modifyPubStorage #-}
+  getStoreMutex = asks env'storeMutex
+  {-# INLINE getStoreMutex #-}
+  getStoreChan = asks env'storeChan
+  {-# INLINE getStoreChan #-}
 
 -- | Minimum time between two writes of storage to disk
 storeTimeBetweenWrites :: NominalDiffTime
@@ -223,14 +217,14 @@ storageStoreThread storeDir mutex updChan = void $ forkOnOther $ do
   -- Thread that indefinetely queries if we need to write down new state
   fix $ \next -> do
     (caller, authInfo) <- atomically getTimedWrite
-    -- storeWalletIO caller storeDir mutex authInfo
+    storeWalletIO caller storeDir mutex authInfo
     next
 
--- storeWalletIO :: PlatformNatives => Text -> Text -> MVar () -> AuthInfo -> IO ()
--- storeWalletIO caller storeDir mutex ai = do
---   let storage = _authInfo'storage ai
---   let eciesPubKey = _authInfo'eciesPubKey ai
---   withMVar mutex $ const $ flip runReaderT storeDir $ saveStorageToFile caller eciesPubKey storage
+storeWalletIO :: PlatformNatives => Text -> Text -> MVar () -> AuthInfo -> IO ()
+storeWalletIO caller storeDir mutex ai = do
+  let storage = _authInfo'storage ai
+  let eciesPubKey = _authInfo'eciesPubKey ai
+  withMVar mutex $ const $ flip runReaderT storeDir $ saveStorageToFile caller eciesPubKey storage
 
 -- | Execute action under authorized context or return the given value as result
 -- if user is not authorized. Each time the login info changes and authInfo'isUpdate flag is set to 'False'
@@ -304,10 +298,7 @@ liftUnauthed ma = ReaderT $ const ma
 
 wrapped :: MonadFrontBase t m => Text -> ErgveinM t m a -> ErgveinM t m a
 wrapped caller ma = do
-  void $ storeWallet clr =<< getPostBuild
-  buildE <- getPostBuild
-  -- ac <- _pubStorage'activeCurrencies <$> getPubStorage
-  -- void . updateActiveCurs $ fmap (\cl -> const (S.fromList cl)) $ ac <$ buildE
+  void $ storeStorage clr =<< getPostBuild
   ma
   where clr = caller <> ":" <> "wrapped"
 

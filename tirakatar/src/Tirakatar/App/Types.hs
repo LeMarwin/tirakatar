@@ -3,6 +3,12 @@ module Tirakatar.App.Types
   (
     Password
   , AuthInfo(..)
+  -- * Export lenses
+  , authInfo'storage
+  , authInfo'eciesPubKey
+  , authInfo'login
+  , authInfo'isUpdate
+  , authInfo'isPlain
   ) where
 
 import Control.Lens
@@ -11,8 +17,8 @@ import Tirakatar.Crypto.ECIES
 import Tirakatar.Types.Storage
 
 data AuthInfo = AuthInfo {
-  -- _authInfo'storage     :: !WalletStorage
-  _authInfo'eciesPubKey :: !ECIESPubKey
+  _authInfo'storage     :: !TirStorage
+, _authInfo'eciesPubKey :: !ECIESPubKey
 , _authInfo'login       :: !Text
 , _authInfo'isUpdate    :: !Bool
   -- ^ This field indicates whether the widget should be redrawn in 'liftAuth'.

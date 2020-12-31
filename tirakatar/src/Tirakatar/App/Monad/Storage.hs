@@ -18,9 +18,11 @@ import Data.Text (Text)
 import Network.Haskoin.Block (Timestamp)
 import Reflex
 
-import Tirakatar.Crypto
 import Tirakatar.App.Monad.Prim
 import Tirakatar.App.Native
+import Tirakatar.App.Types
+import Tirakatar.Crypto
+import Tirakatar.Types
 
 import qualified Data.List as L
 import qualified Data.Map.Strict as M
@@ -29,16 +31,12 @@ import qualified Data.Vector as V
 import qualified Network.Haskoin.Block as HB
 import qualified Network.Haskoin.Transaction as HT
 
-data PubStorage = PubStorage
-data EncryptedPrvStorage = EncryptedPrvStorage
-data AuthInfo = AuthInfo
-
 class (MonadBaseConstr t m, HasStoreDir m) => MonadStorage t m | m -> t where
   getEncryptedPrvStorage :: m EncryptedPrvStorage
-  getWalletName          :: m Text
+  getStorageName         :: m Text
   getPubStorage          :: m PubStorage
   getPubStorageD         :: m (Dynamic t PubStorage)
-  storeWallet            :: Text -> Event t () -> m (Event t ())
+  storeStorage           :: Text -> Event t () -> m (Event t ())
   modifyPubStorage       :: Text -> Event t (PubStorage -> Maybe PubStorage) -> m (Event t ())
   -- | Get mutex that guards writing or reading from storage file
   getStoreMutex          :: m (MVar ())

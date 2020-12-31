@@ -24,6 +24,7 @@ import Tirakatar.App.Run.Callbacks
 import Tirakatar.App.Settings
 import Tirakatar.App.Storage.Util
 import Tirakatar.App.Version
+import Tirakatar.Types
 
 import qualified Data.Map.Strict as M
 import qualified Data.Set as S
@@ -89,7 +90,7 @@ instance (MonadBaseConstr t m, MonadRetract t m, PlatformNatives, HasVersion) =>
     authRef <- asks unauth'authRef
     performEvent $ ffor e $ \v -> do
       logWrite "unauthed setAuthInfo: setting info"
-      -- setLastStorage $ _storage'walletName . _authInfo'storage <$> v
+      setLastStorage $ _storage'name . _authInfo'storage <$> v
       writeExternalRef authRef v
   {-# INLINE setAuthInfo #-}
   getPasswordModalEF = asks unauth'passModalEF

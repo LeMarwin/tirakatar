@@ -8,7 +8,6 @@ module Tirakatar.App.Password(
   , askPasswordModal
   , setupLogin
   , setupPattern
-  , setupDerivPrefix
   ) where
 
 import Control.Monad.Except
@@ -81,21 +80,6 @@ setupLogin e = divClass "setup-password" $ form $ fieldset $ mdo
     l <- sampleDyn loginD
     check PWSEmptyLogin $ not $ T.null l
     pure l
-
-setupDerivPrefix = undefined
--- setupDerivPrefix :: MonadFrontBase t m => [Currency] -> Maybe DerivPrefix -> m (Dynamic t DerivPrefix)
--- setupDerivPrefix ac mpath = do
---   divClass "password-setup-descr" $ h5 $ localizedText PWSDerivDescr
---   divClass "setup-password" $ form $ fieldset $ mdo
---     let dval = fromMaybe defValue mpath
---     pathTD <- textField PWSDeriv $ showDerivPath dval
---     pathE <- validate $ ffor (updated pathTD) $ maybe (Left PWSInvalidPath) Right . parseDerivePath
---     holdDyn dval pathE
---   where
---     defValue = case ac of
---       [] -> defaultDerivePath BTC
---       [c] -> defaultDerivePath c
---       _ -> defaultDerivPathPrefix
 
 askPassword :: MonadFrontBase t m => Text -> Bool -> m (Event t Password)
 askPassword name writeMeta
