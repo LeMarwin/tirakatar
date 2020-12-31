@@ -1,0 +1,36 @@
+name:                tirakatar-desktop
+version:             0.1.0.0
+synopsis:            Implementation for Tirakatar app natives for desktop platform.
+description:         See README.md
+category:            Cryptocurrency
+build-type:          Simple
+cabal-version:       >=2.0
+
+library
+  hs-source-dirs:      src
+  exposed-modules:
+    Tirakatar.App.Desktop.Native
+    Tirakatar.App.Desktop.Run
+  build-depends:
+      aeson
+    , base
+    , bytestring
+    , directory
+    , directory-tree
+    , dns
+    , tirakatar-common
+    , tirakatar-native
+    , filepath
+    , Hclip
+    , jsaddle
+    , jsaddle-webkit2gtk
+    , open-browser
+    , text
+    , time
+    , turtle
+    , x509-store
+    , x509-system
+  default-language:    Haskell2010
+  default-extensions:
+    MultiParamTypeClasses
+    OverloadedStrings

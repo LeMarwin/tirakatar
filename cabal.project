@@ -1,0 +1,9 @@
+packages:
+  ./common
+  ./crypto
+  ./tirakatar
+  ./android
+  ./desktop
+  ./native
+  ./types
+  ./version

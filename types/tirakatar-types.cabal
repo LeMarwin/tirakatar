@@ -1,0 +1,51 @@
+name:                tirakatar-types
+version:             0.1.0.0
+synopsis:            Domain types that shared across Tirakatar packages.
+description:         See README.md
+category:            Cryptocurrency
+build-type:          Simple
+cabal-version:       >=2.0
+
+library
+  Ghc-options:         -Wall
+  hs-source-dirs:      src
+  exposed-modules:
+    Tirakatar.Types
+    Tirakatar.Types.Storage
+    Tirakatar.Types.Keys.Prim
+    Tirakatar.Types.Orphanage
+    Tirakatar.Types.Storage.Private
+    Tirakatar.Types.Storage.Public
+    Tirakatar.Types.Storage.Storage
+  default-language:    Haskell2010
+  build-depends:
+      aeson
+    , base
+    , base64-bytestring         >= 1        && < 1.0.0.3
+    , bytestring                >= 0.10     && < 0.11
+    , cereal
+    , containers                >= 0.6      && < 0.7
+    , cryptonite                >= 0.25     && < 0.26
+    , deepseq                   >= 1.4      && < 1.5
+    , tirakatar-common
+    , tirakatar-crypto
+    , flat
+    , hashable                  >= 1.2.7.0  && < 1.3.0.1
+    , haskoin-core              >= 0.12.0   && < 0.12.1
+    , jsaddle
+    , lens                      == 4.17.*
+    , memory                    >= 0.14.16  && < 0.15.1
+    , string-conversions        >= 0.4.0.1  && < 0.4.0.2
+    , text
+    , time
+    , vector                    >= 0.12     && < 0.13
+    , safecopy                  >= 0.9      && < 0.10
+  default-extensions:
+    DeriveAnyClass
+    DeriveGeneric
+    LambdaCase
+    OverloadedStrings
+    RecordWildCards
+    TemplateHaskell
+    ScopedTypeVariables
+    TypeFamilies

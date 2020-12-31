@@ -1,0 +1,34 @@
+name:           tirakatar-version
+version:        0.1.0.0
+synopsis:       Package to embed tirakatar version into executable.
+description:    Please see the README on Github at <https://github.com/tirakatar#readme>
+homepage:       https://github.com/tirakatar#readme
+bug-reports:    https://github.com/tirakatar/issues
+build-type:     Simple
+cabal-version:  >= 1.10
+
+source-repository head
+  type: git
+  location: https://github.com/tirakatar
+
+library
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , aeson
+    , tirakatar-common
+    , template-haskell
+    , text
+
+  exposed-modules:
+      Tirakatar.App.Version
+      Tirakatar.App.Version.Internal
+  default-language: Haskell2010
+  default-extensions:
+    DeriveDataTypeable
+    MultiParamTypeClasses
+    OverloadedStrings
+    QuasiQuotes
+    RecordWildCards
+    TemplateHaskell

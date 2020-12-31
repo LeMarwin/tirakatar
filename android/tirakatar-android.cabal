@@ -1,0 +1,49 @@
+name:                tirakatar-android
+version:             0.1.0.0
+synopsis:            Implementation for Tirakatar app natives for android platform.
+description:         See README.md
+category:            Cryptocurrency
+build-type:          Simple
+cabal-version:       >=2.0
+
+flag android
+  description: Enable android specific features.
+  default: False
+  manual: True
+
+library
+  hs-source-dirs:      src
+  build-depends:
+      base
+    , aeson
+    , bytestring
+    , data-default
+    , directory
+    , directory-tree
+    , dns
+    , filepath
+    , jsaddle
+    , reflex-dom
+    , text
+    , time
+    , tirakatar-common
+    , tirakatar-native
+  default-language:    Haskell2010
+  default-extensions:
+    MultiParamTypeClasses
+    OverloadedStrings
+  if flag(android)
+    -- extra-libraries: log android
+    c-sources:
+      cbits/camera.c
+      cbits/clipboard.c
+      cbits/clock.c
+      cbits/open_url.c
+      cbits/share.c
+    build-depends: android-activity, x509-android
+    build-tools: hsc2hs
+    exposed-modules:
+      Tirakatar.App.Android.Native
+      Tirakatar.App.Android.Native.Certs
+      Tirakatar.App.Android.Native.MainWidget
+      Tirakatar.App.Android.Run

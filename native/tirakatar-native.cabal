@@ -1,0 +1,27 @@
+name:                tirakatar-native
+version:             0.1.0.0
+synopsis:            Abstracted interface for interaction with platform for Tirakatar app.
+description:         See README.md
+category:            Cryptocurrency
+build-type:          Simple
+cabal-version:       >=2.0
+
+library
+  hs-source-dirs:      src
+  exposed-modules:
+    Tirakatar.App.Native
+    Tirakatar.App.Run
+    Tirakatar.App.Run.Callbacks
+  default-language:    Haskell2010
+  build-depends:
+      base
+    , aeson
+    , bytestring
+    , dns
+    , jsaddle
+    , mtl
+    , text
+    , time
+    , x509-store >= 1.6
+  default-extensions:
+    MultiParamTypeClasses

@@ -1,0 +1,215 @@
+cabal-version: >=2.0
+name: tirakatar-app
+version: 0.1.0.0
+synopsis: Private messenger with e2e encrypted group chats
+description: See README.md
+author: - Levon Oganyan
+maintainer: - Levon Oganyan <lemarwin42@protonmail.com>
+build-type: Simple
+extra-source-files:
+    static/img/*
+    static/assets/font/*
+
+flag android
+    description:
+        Enable android specific features.
+    default: False
+    manual: True
+
+library
+    ghc-options:
+    exposed-modules:
+        Tirakatar.App
+        Tirakatar.App.Alert
+        Tirakatar.App.Alert.Handler
+        Tirakatar.App.Camera
+        Tirakatar.App.Clipboard
+        Tirakatar.App.Elements
+        Tirakatar.App.Elements.Inplace
+        Tirakatar.App.Elements.Input
+        Tirakatar.App.Elements.Input.Class
+        Tirakatar.App.Elements.Toggle
+        Tirakatar.App.Embed
+        Tirakatar.App.Embed.TH
+        Tirakatar.App.Id
+        Tirakatar.App.IP
+        Tirakatar.App.Language
+        Tirakatar.App.Loading
+        Tirakatar.App.Localization.Inplace
+        Tirakatar.App.Localization.Input
+        Tirakatar.App.Localization.IP
+        Tirakatar.App.Localization.Native
+        Tirakatar.App.Localization.Password
+        Tirakatar.App.Localization.PatternKey
+        Tirakatar.App.Localization.Storage
+        Tirakatar.App.Log
+        Tirakatar.App.Log.Event
+        Tirakatar.App.Log.Page
+        Tirakatar.App.Log.Reader
+        Tirakatar.App.Log.Types
+        Tirakatar.App.Log.Writer
+        Tirakatar.App.Main
+        Tirakatar.App.Menu
+        Tirakatar.App.Monad
+        Tirakatar.App.Monad.Async
+        Tirakatar.App.Monad.Auth
+        Tirakatar.App.Monad.Base
+        Tirakatar.App.Monad.Client
+        Tirakatar.App.Monad.Front
+        Tirakatar.App.Monad.Prim
+        Tirakatar.App.Monad.Storage
+        Tirakatar.App.Monad.Unauth
+        Tirakatar.App.Monad.Util
+        Tirakatar.App.Node.Socket
+        Tirakatar.App.OpenUrl
+        Tirakatar.App.Page.Canvas
+        Tirakatar.App.Page.PatternKey
+        Tirakatar.App.Page.QRCode
+        Tirakatar.App.Password
+        Tirakatar.App.Platform
+        Tirakatar.App.Resize
+        Tirakatar.App.Settings
+        Tirakatar.App.Share
+        Tirakatar.App.Status.Types
+        Tirakatar.App.Storage.AuthInfo
+        Tirakatar.App.Storage.Util
+        Tirakatar.App.Style
+        Tirakatar.App.TimeZone
+        Tirakatar.App.Types
+        Tirakatar.App.Util
+        Tirakatar.App.Validate
+        Tirakatar.App.Widget.GraphPinCode
+        Tirakatar.App.Wrapper
+        Tirakatar.App.Yaml
+    hs-source-dirs: src
+    default-language: Haskell2010
+    default-extensions: BangPatterns ConstraintKinds DataKinds
+                        DeriveDataTypeable DeriveGeneric FlexibleContexts FlexibleInstances
+                        FunctionalDependencies GADTs GeneralizedNewtypeDeriving LambdaCase
+                        OverloadedStrings RankNTypes RecordWildCards RecursiveDo
+                        ScopedTypeVariables StandaloneDeriving TemplateHaskell
+                        TupleSections TypeApplications TypeFamilies TypeOperators
+                        UndecidableInstances
+    build-depends:
+        aeson -any,
+        aeson-lens -any,
+        async -any,
+        attoparsec >= 0.13 && < 0.14,
+        base -any,
+        base64-bytestring >=1 && <1.0.0.3,
+        binary >=0.8 && <0.9,
+        bytestring >=0.10 && <0.11,
+        cereal >=0.5 && <0.6,
+        clay >=0.14 && <0.15,
+        containers >=0.6 && <0.7,
+        data-default -any,
+        dependent-map >= 0.3,
+        dependent-sum >= 0.6,
+        directory -any,
+        dns >= 4.0 && < 5.0,
+        tirakatar-common >=1.0 && <1.1,
+        tirakatar-crypto >=0.1 && <0.2,
+        tirakatar-native >=0.1 && <0.2,
+        tirakatar-types >=0.1 && <0.2,
+        tirakatar-version >= 0.1 && < 0.2,
+        exceptions -any,
+        file-embed >=0.0 && <0.1,
+        filepath -any,
+        ghcjs-dom -any,
+        haskoin-core >= 0.12.0 && < 0.12.1,
+        http-client >=0.5 && <0.7,
+        immortal >= 0.3 && < 0.4,
+        immortal-worker >= 0.1 && < 0.2,
+        iproute >= 1.7.8 && < 1.8,
+        jsaddle -any,
+        lens >=4.16 && <4.18,
+        lifted-base >=0.2 && <0.3,
+        lmdb-simple >= 0.4 && < 0.5,
+        memory >=0.14.16 && <0.15.1,
+        MonadRandom -any,
+        mtl >=2.2 && <2.3,
+        network >= 2.8 && < 3.0,
+        parsec -any,
+        qrcode-core,
+        random-shuffle,
+        ref-tf >=0.4 && <0.5,
+        reflex >=0.4 && <0.9,
+        reflex-dom >=0.4 && <0.9,
+        reflex-dom-core -any,
+        reflex-dom-retractable -any,
+        reflex-external-ref -any,
+        reflex-localize -any,
+        reflex-localize-dom -any,
+        safe -any,
+        safecopy  >= 0.9 && < 0.10,
+        safe-exceptions -any,
+        semialign -any,
+        serialise >= 0.2 && < 0.3,
+        socks >= 0.5 && < 0.7,
+        split >=0.2.3.3 && <0.3,
+        stm >=2.4 && <2.6,
+        template-haskell -any,
+        text >=1.2 && <1.3,
+        these -any,
+        time -any,
+        unliftio >= 0.2 && < 0.3,
+        unliftio-core >= 0.1 && < 0.2,
+        validation >=1 && < 1.2,
+        vector -any,
+        vector-algorithms,
+        wreq -any,
+        yaml -any
+
+    if flag(android)
+        cpp-options: -DANDROID
+        build-depends:
+            android-activity -any,
+            tirakatar-android -any
+    else
+        build-depends:
+            tirakatar-desktop -any
+
+executable tirakatar
+  hs-source-dirs:
+      app
+  main-is:             Main.hs
+  ghc-options: -O3 -threaded -rtsopts "-with-rtsopts=-N -qm"
+  build-depends:
+      base
+    , data-default
+    , directory
+    , tirakatar-app
+    , tirakatar-native
+    , tirakatar-version
+    , optparse-generic  >= 1.3      && < 1.4
+    , reflex
+    , reflex-dom
+    , text
+  if flag(android)
+    build-depends: tirakatar-android
+    cpp-options: -DANDROID
+  else
+    build-depends: tirakatar-desktop
+  default-language:    Haskell2010
+  default-extensions:
+    BangPatterns
+    ConstraintKinds
+    DataKinds
+    DeriveDataTypeable
+    DeriveGeneric
+    FlexibleContexts
+    FlexibleInstances
+    FunctionalDependencies
+    GADTs
+    GeneralizedNewtypeDeriving
+    LambdaCase
+    OverloadedStrings
+    RankNTypes
+    RecordWildCards
+    ScopedTypeVariables
+    StandaloneDeriving
+    TemplateHaskell
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators
