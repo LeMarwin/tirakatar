@@ -1,9 +1,10 @@
 packages:
+  ./android
   ./common
   ./crypto
-  ./tirakatar
-  ./android
   ./desktop
   ./native
+  ./tirakatar
+  ./tirakatar-server
   ./types
   ./version
