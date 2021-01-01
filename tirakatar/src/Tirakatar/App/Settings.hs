@@ -31,7 +31,7 @@ import Tirakatar.Text
 import Tirakatar.App.IP
 import Tirakatar.App.Language
 import Tirakatar.App.Platform
-import Tirakatar.App.Yaml(readYamlEither')
+import Tirakatar.Yaml(readYamlEither')
 
 import qualified Data.Map.Strict as M
 import qualified Data.Text as T

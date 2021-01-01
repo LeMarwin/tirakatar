@@ -14,6 +14,7 @@ library
     Tirakatar.IO
     Tirakatar.Text
     Tirakatar.Lens
+    Tirakatar.Yaml
   build-depends:
       base
     , aeson
@@ -26,4 +27,5 @@ library
     , safe
     , template-haskell
     , text
+    , yaml -any
   default-language:    Haskell2010

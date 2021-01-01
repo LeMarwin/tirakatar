@@ -1,4 +1,5 @@
-module Tirakatar.App.Yaml(
+{-# LANGUAGE ScopedTypeVariables #-}
+module Tirakatar.Yaml(
     loadYaml
   , loadYamlEither
   , readYaml
