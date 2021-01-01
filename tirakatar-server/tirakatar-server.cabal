@@ -98,15 +98,14 @@ test-suite tirakatar-server-test
       base
     , attoparsec
     , bytestring
+    , cereal
+    , deepseq                  >= 1.4     &&  < 1.5
+    , haskoin-core             >= 0.12.0  &&  < 0.12.1
+    , parallel                 >= 3.2     &&  < 3.3
     , QuickCheck
     , quickcheck-instances
     , vector
     , tirakatar-server
-    , ergvein-wallet-types
-    , deepseq                  >= 1.4     &&  < 1.5
-    , parallel                 >= 3.2     &&  < 3.3
-    , haskoin-core             >= 0.12.0  &&  < 0.12.1
-    , cereal
   default-extensions:
     RecordWildCards
     OverloadedStrings
