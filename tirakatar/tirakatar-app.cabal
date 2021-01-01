@@ -35,13 +35,18 @@ library
         Tirakatar.App.IP
         Tirakatar.App.Language
         Tirakatar.App.Loading
+        Tirakatar.App.Localization.AuthInfo
+        Tirakatar.App.Localization.Initial
         Tirakatar.App.Localization.Inplace
         Tirakatar.App.Localization.Input
         Tirakatar.App.Localization.IP
         Tirakatar.App.Localization.Native
         Tirakatar.App.Localization.Password
         Tirakatar.App.Localization.PatternKey
+        Tirakatar.App.Localization.Seed
+        Tirakatar.App.Localization.Settings
         Tirakatar.App.Localization.Storage
+        Tirakatar.App.Localization.Util
         Tirakatar.App.Log
         Tirakatar.App.Log.Event
         Tirakatar.App.Log.Page
@@ -63,8 +68,12 @@ library
         Tirakatar.App.Node.Socket
         Tirakatar.App.OpenUrl
         Tirakatar.App.Page.Canvas
+        Tirakatar.App.Page.Initial
+        Tirakatar.App.Page.Password
         Tirakatar.App.Page.PatternKey
         Tirakatar.App.Page.QRCode
+        Tirakatar.App.Page.Seed
+        Tirakatar.App.Page.Settings.Unauth
         Tirakatar.App.Password
         Tirakatar.App.Platform
         Tirakatar.App.Resize

@@ -11,9 +11,10 @@ library
   hs-source-dirs:      src
   exposed-modules:
     Tirakatar.Types
-    Tirakatar.Types.Storage
     Tirakatar.Types.Keys.Prim
     Tirakatar.Types.Orphanage
+    Tirakatar.Types.Restore
+    Tirakatar.Types.Storage
     Tirakatar.Types.Storage.Private
     Tirakatar.Types.Storage.Public
     Tirakatar.Types.Storage.Storage

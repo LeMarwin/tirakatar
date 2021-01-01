@@ -16,6 +16,8 @@ module Tirakatar.App.Storage.Util(
   , decryptPrvStorage
   , encryptStorage
   , passwordToECIESPrvKey
+  , encryptBSWithAEAD
+  , decryptBSWithAEAD
   ) where
 
 import Control.Lens
@@ -231,3 +233,36 @@ passwordToECIESPrvKey password = case secretKey passwordHash of
   CryptoPassed key -> Right key
   where
     passwordHash = fastPBKDF2_SHA256 defaultPBKDF2Params (encodeUtf8 password) BS.empty :: ByteString
+
+encryptBSWithAEAD :: (MonadIO m, MonadRandom m) => ByteString -> Password -> m (Either StorageAlert EncryptedByteString)
+encryptBSWithAEAD bs password = do
+  salt <- genRandomSalt32
+  let secKey = Key (fastPBKDF2_SHA256 defaultPBKDF2Params (encodeUtf8 password) salt) :: Key AES256 ByteString
+  iv <- genRandomIV (undefined :: AES256)
+  case iv of
+    Nothing -> pure $ Left $ SACryptoError "Failed to generate an AES initialization vector"
+    Just iv' -> do
+      let ivBS = convert iv' :: ByteString
+          saltBS = convert salt :: ByteString
+          header = BS.concat [saltBS, ivBS]
+      case encryptWithAEAD AEAD_GCM secKey iv' header bs defaultAuthTagLength of
+        Left err -> pure $ Left $ SACryptoError $ showt err
+        Right (authTag, ciphertext) -> do
+          let authTag' = unsafeSizedByteArray (convert authTag :: ByteString) :: SizedByteArray 16 ByteString
+          pure $ Right $ EncryptedByteString salt iv' authTag' ciphertext
+
+decryptBSWithAEAD :: EncryptedByteString -> Password -> Either StorageAlert ByteString
+decryptBSWithAEAD encryptedBS password =
+  case decryptWithAEAD AEAD_GCM secKey iv header ciphertext authTag' of
+    Nothing -> Left $ SACryptoError "Failed to decrypt message"
+    Just decryptedBS -> Right decryptedBS
+  where
+    salt = encryptedByteString'salt encryptedBS
+    saltBS = convert salt :: ByteString
+    secKey = Key (fastPBKDF2_SHA256 defaultPBKDF2Params (encodeUtf8 password) salt) :: Key AES256 ByteString
+    iv = encryptedByteString'iv encryptedBS
+    ivBS = convert iv :: ByteString
+    authTag = encryptedByteString'authTag encryptedBS
+    authTag' = AuthTag (convert authTag :: Bytes)
+    ciphertext = encryptedByteString'ciphertext encryptedBS
+    header = BS.concat [saltBS, ivBS]

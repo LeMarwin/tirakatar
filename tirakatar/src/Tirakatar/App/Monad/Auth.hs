@@ -290,7 +290,7 @@ liftAuth ma0 ma = mdo
 isMauthUpdate :: Maybe AuthInfo -> Bool
 isMauthUpdate mauth = case mauth of
   Nothing -> True
-  Just auth -> False --not $ _authInfo'isUpdate auth
+  Just auth -> not $ _authInfo'isUpdate auth
 
 -- | Lift action that doesn't require authorisation in context where auth is mandatory
 liftUnauthed :: m a -> ErgveinM t m a

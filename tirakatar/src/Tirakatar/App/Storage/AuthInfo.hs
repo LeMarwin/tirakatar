@@ -18,12 +18,13 @@ import Tirakatar.Types
 import qualified Data.Text as T
 
 initAuthInfo :: (MonadIO m, PlatformNatives, HasStoreDir m)
-  => Mnemonic
+  => AccountSource
+  -> Mnemonic
   -> StorageName
   -> Password
   -> Bool
   -> m (Either AuthInfoAlert AuthInfo)
-initAuthInfo mnemonic login pass isPass = do
+initAuthInfo accSource mnemonic login pass isPass = do
   mstorage <- createStorage mnemonic (login, pass)
   case mstorage of
     Left err -> do
@@ -45,20 +46,17 @@ initAuthInfo mnemonic login pass isPass = do
 loadAuthInfo :: (MonadIO m, HasStoreDir m, PlatformNatives)
   => StorageName
   -> Password
-  -> m (Either AuthInfoAlert (AuthInfo, Password))
+  -> m (Either AuthInfoAlert AuthInfo)
 loadAuthInfo login pass = do
   mstorage <- loadStorageFromFile login pass
   case mstorage of
     Left err -> pure $ Left $ LoadStorageAlert err
     Right s -> case passwordToECIESPrvKey pass of
       Left _ -> pure $ Left GenerateECIESKeyAlert
-      Right k -> pure $ Right (
-          AuthInfo {
-            _authInfo'storage = s
-          , _authInfo'eciesPubKey = toPublic k
-          , _authInfo'login = login
-          , _authInfo'isUpdate = False
-          , _authInfo'isPlain = pass == ""
-          }
-        , pass
-        )
+      Right k -> pure $ Right $ AuthInfo {
+          _authInfo'storage = s
+        , _authInfo'eciesPubKey = toPublic k
+        , _authInfo'login = login
+        , _authInfo'isUpdate = False
+        , _authInfo'isPlain = pass == ""
+        }
