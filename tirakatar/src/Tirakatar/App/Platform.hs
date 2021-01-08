@@ -8,8 +8,6 @@ module Tirakatar.App.Platform(
   ) where
 
 import GHC.Generics (Generic)
-import Network.Haskoin.Constants
-import Network.Haskoin.Block as HB
 import qualified Data.Vector as V
 
 -- | Platform the app is compiled for.

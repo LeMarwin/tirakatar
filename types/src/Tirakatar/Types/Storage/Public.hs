@@ -5,7 +5,8 @@ module Tirakatar.Types.Storage.Public
   (
     PubStorage(..)
   -- * Export lenses
-  , pubStorage'rootPubKey
+  , pubStorage'encPubKey
+  , pubStorage'sigPubKey
   ) where
 
 import Control.Lens
@@ -15,14 +16,16 @@ import Data.Serialize
 import Tirakatar.Types.Keys.Prim
 
 data PubStorage = PubStorage {
-    _pubStorage'rootPubKey          :: !TirRootXPubKey
-  } deriving (Eq, Show, Read)
+    _pubStorage'encPubKey :: !RootEncPubKey
+  , _pubStorage'sigPubKey :: !RootSigPubKey
+  } deriving (Show)
 
 instance SafeCopy PubStorage where
   version = 1
   putCopy PubStorage{..} = contain $ do
-    put _pubStorage'rootPubKey
-  getCopy = contain $ PubStorage <$> get
+    put _pubStorage'encPubKey
+    put _pubStorage'sigPubKey
+  getCopy = contain $ PubStorage <$> get <*> get
 
 -- This instances is required only for the current version
 makeLenses ''PubStorage

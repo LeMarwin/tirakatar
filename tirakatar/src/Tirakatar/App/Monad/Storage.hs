@@ -15,7 +15,6 @@ import Data.Map (Map)
 import Data.Maybe (fromMaybe, isJust, isNothing)
 import Data.Set (Set)
 import Data.Text (Text)
-import Network.Haskoin.Block (Timestamp)
 import Reflex
 
 import Tirakatar.App.Monad.Prim
@@ -28,8 +27,6 @@ import qualified Data.List as L
 import qualified Data.Map.Strict as M
 import qualified Data.Set as S
 import qualified Data.Vector as V
-import qualified Network.Haskoin.Block as HB
-import qualified Network.Haskoin.Transaction as HT
 
 class (MonadBaseConstr t m, HasStoreDir m) => MonadStorage t m | m -> t where
   getEncryptedPrvStorage :: m EncryptedPrvStorage

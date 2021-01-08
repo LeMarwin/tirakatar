@@ -136,23 +136,36 @@ createStorage :: MonadIO m
   => Mnemonic -- ^ Mnemonic to generate keys
   -> (StorageName, Password) -- ^ Wallet file name and encryption password
   -> m (Either StorageAlert TirStorage)
-createStorage mnemonic (login, pass) = case mnemonicToSeed "" mnemonic of
-   Left err -> pure $ Left $ SAMnemonicFail $ showt err
-   Right seed -> do
-    let rootPrvKey = TirRootXPrvKey $ makeXPrvKey seed
-        prvStorage = createPrvStorage mnemonic rootPrvKey
-        pubStorage = createPubStorage rootPrvKey
+createStorage mnemonic (login, pass) = case deriveRootKeysFromMnemonic mnemonic of
+  Left err -> pure $ Left err
+  Right (rootEncKey, rootSigKey) -> do
+    let prvStorage = createPrvStorage mnemonic rootEncKey rootSigKey
+    let pubStorage = createPubStorage rootEncKey rootSigKey
     encryptPrvStorageResult <- encryptPrvStorage prvStorage pass
     case encryptPrvStorageResult of
       Left err -> pure $ Left err
       Right encryptedPrvStorage -> pure $ Right $ TirStorage encryptedPrvStorage pubStorage login
+  where
+    deriveRootKeysFromMnemonic :: Mnemonic -> Either StorageAlert (ECIESPrvKey, ECDSAPrvKey)
+    deriveRootKeysFromMnemonic mnem = case mnemonicToSeed "" mnem of
+      Left err -> Left $ SAMnemonicFail $ showt err
+      Right v -> let
+        (ieBs, dsBs) = BS.splitAt 32 v
+        ie' = secretKey ieBs
+        ds' = ecdsaPrivKey dsBs
+        in case (ie', ds') of
+          (CryptoPassed ie, CryptoPassed ds) -> Right (ie, ds)
+          _ -> Left $ SAMnemonicFail mnem
 
-createPrvStorage :: Mnemonic -> TirRootXPrvKey -> PrvStorage
-createPrvStorage mnemonic rootPrvKey = PrvStorage mnemonic rootPrvKey
+createPrvStorage :: Mnemonic -> ECIESPrvKey -> ECDSAPrvKey -> PrvStorage
+createPrvStorage mnemonic rootEncKey rootSigKey =
+  PrvStorage mnemonic (RootEncPrvKey rootEncKey) (RootSigPrvKey rootSigKey)
 
-createPubStorage :: TirRootXPrvKey -> PubStorage
-createPubStorage rootPrvKey = PubStorage rootPubKey
-  where rootPubKey = TirRootXPubKey $ deriveXPubKey $ unTirRootXPrvKey rootPrvKey
+createPubStorage :: ECIESPrvKey -> ECDSAPrvKey -> PubStorage
+createPubStorage rootEncPrvKey rootSigPrvKey = PubStorage rootEncPubKey rootSigPubKey
+  where
+    rootEncPubKey = RootEncPubKey $ toPublic rootEncPrvKey
+    rootSigPubKey = RootSigPubKey $ ecdsaToPublic rootSigPrvKey
 
 encryptPrvStorage :: MonadIO m => PrvStorage -> Password -> m (Either StorageAlert EncryptedPrvStorage)
 encryptPrvStorage prvStorage password = liftIO $ do
@@ -197,7 +210,7 @@ encryptStorage storage pubKey = do
         Just iv -> do
           let storageBS = runPut $ safePut storage
               ivBS = convert iv :: ByteString
-              eciesPointBS = encodePoint curve eciesPoint :: ByteString
+              eciesPointBS = encodeEciesPubKey eciesPoint
               encryptedData = encryptWithAEAD AEAD_GCM secKey iv (BS.concat [salt, ivBS, eciesPointBS]) storageBS defaultAuthTagLength
           case encryptedData of
             Left err -> pure $ Left $ SACryptoError $ showt err
@@ -216,7 +229,7 @@ decryptStorage encryptedStorage prvKey = do
       CryptoFailed err -> Left $ SACryptoError $ showt err
       CryptoPassed sharedSecret -> do
         let ivBS = convert iv :: ByteString
-            eciesPointBS = encodePoint curve eciesPoint :: ByteString
+            eciesPointBS = encodeEciesPubKey eciesPoint
             secKey = Key (fastPBKDF2_SHA256 defaultPBKDF2Params sharedSecret salt) :: Key AES256 ByteString
             decryptedData = decryptWithAEAD AEAD_GCM secKey iv (BS.concat [salt, ivBS, eciesPointBS]) ciphertext authTag
         case decryptedData of

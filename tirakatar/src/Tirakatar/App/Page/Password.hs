@@ -12,7 +12,7 @@ import Reflex.ExternalRef
 import Reflex.Localize
 import Text.Read
 
-import Tirakatar.Crypto.Keys     (Mnemonic)
+import Tirakatar.Crypto.Mnemonic (Mnemonic)
 import Tirakatar.Text
 import Tirakatar.Types
 import Tirakatar.App.Alert
@@ -20,7 +20,6 @@ import Tirakatar.App.Elements
 import Tirakatar.App.Elements.Input
 import Tirakatar.App.Language
 import Tirakatar.App.Localization.Password
--- import Tirakatar.App.Localization.Restore
 import Tirakatar.App.Monad
 import Tirakatar.App.Native
 import Tirakatar.App.Password

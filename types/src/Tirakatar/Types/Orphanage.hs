@@ -14,20 +14,12 @@ import Data.Serialize
 import Data.Time
 import Data.Text (Text)
 import Data.Vector (Vector)
-import Network.Haskoin.Block (BlockHash)
-import Network.Haskoin.Transaction (OutPoint(..), TxHash)
 
 import Tirakatar.Text
 
 import qualified Data.ByteString.Short as BSS
 import qualified Data.Vector as V
 import qualified Data.Text as T
-
-instance FromJSONKey BlockHash
-instance ToJSONKey   BlockHash
-
-instance FromJSONKey OutPoint
-instance ToJSONKey   OutPoint
 
 instance FromJSON ShortByteString where
   parseJSON = withText "ShortByteString" $
@@ -43,14 +35,6 @@ instance SafeCopy (IV AES256) where
   getCopy = contain $ do
     iv :: ByteString <- safeGet
     maybe (fail "failed to make iv") pure $ makeIV iv
-
-instance SafeCopy OutPoint where
-  putCopy (OutPoint a b) = contain $ put a >> put b
-  getCopy = contain $ OutPoint <$> get <*> get
-
-instance SafeCopy TxHash where
-  putCopy v = contain $ put v
-  getCopy = contain get
 
 instance Serialize a => Serialize (Vector a) where
   get = do

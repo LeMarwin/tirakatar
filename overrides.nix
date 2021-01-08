@@ -59,7 +59,6 @@ in (self: super: let
     doctemplates = self.callPackage ./derivations/doctemplates.nix {};
     flat = lib.dontCheck (super.flat);
     haddock-library = self.callPackage ./derivations/haddock-library.nix {};
-    haskoin-core = self.callPackage ./derivations/haskoin-core.nix {};
     hp2any-core = self.callPackage ./derivations/hp2any-core.nix {};
     hp2any-graph = self.callPackage ./derivations/hp2any-graph.nix {};
     hslua = self.callPackage ./derivations/hslua.nix {};
@@ -77,7 +76,6 @@ in (self: super: let
     reflex-external-ref = self.callPackage ./derivations/reflex-external-ref.nix {};
     reflex-localize = self.callPackage ./derivations/reflex-localize.nix {};
     reflex-localize-dom = self.callPackage ./derivations/reflex-localize-dom.nix {};
-    secp256k1-haskell = self.callPackage ./derivations/secp256k1-haskell.nix {};
     skylighting = self.callPackage ./derivations/skylighting.nix {};
     skylighting-core = self.callPackage ./derivations/skylighting-core.nix {};
     stm-hamt = self.callPackage ./derivations/stm-hamt.nix {};

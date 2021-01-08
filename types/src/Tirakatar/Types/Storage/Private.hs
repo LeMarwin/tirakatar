@@ -7,7 +7,8 @@ module Tirakatar.Types.Storage.Private
   , EncryptedPrvStorage(..)
   -- * Export lenses
   , prvStorage'mnemonic
-  , prvStorage'rootPrvKey
+  , prvStorage'encPrvKey
+  , prvStorage'sigPrvKey
   , encryptedPrvStorage'ciphertext
   , encryptedPrvStorage'salt
   , encryptedPrvStorage'iv
@@ -22,23 +23,26 @@ import Data.Serialize
 import Data.Text (pack, unpack)
 
 import Tirakatar.Types.Keys.Prim
-import Tirakatar.Crypto.Keys
+import Tirakatar.Types.Orphanage
+import Tirakatar.Crypto
 
 -- ====================================================================
 --      PrvStorage. Not encrypted
 -- ====================================================================
 
 data PrvStorage = PrvStorage {
-    _prvStorage'mnemonic    :: Mnemonic
-  , _prvStorage'rootPrvKey  :: TirRootXPrvKey
-  } deriving (Eq, Show, Read)
+    _prvStorage'mnemonic  :: !Mnemonic
+  , _prvStorage'encPrvKey :: !RootEncPrvKey
+  , _prvStorage'sigPrvKey :: !RootSigPrvKey
+  } deriving (Show)
 
 instance SafeCopy PrvStorage where
   version = 1
   putCopy PrvStorage{..} = contain $ do
     put $ unpack _prvStorage'mnemonic
-    put _prvStorage'rootPrvKey
-  getCopy = contain $ (PrvStorage . pack) <$> get <*> get
+    put _prvStorage'encPrvKey
+    put _prvStorage'sigPrvKey
+  getCopy = contain $ (PrvStorage . pack) <$> get <*> get <*> get
 
 -- ====================================================================
 --      EncryptedPrvStorage
